@@ -1,8 +1,8 @@
 #!/system/bin/sh
 [ "$KSU" = true ] || abort '此包仅针对 KernelSU 验证。'
 [ "$ARCH" = arm64 ] || abort '需要 ARM64 设备。'
-ui_print '检查当前设备和触控驱动…'
-/data/adb/ksu/bin/busybox sh "$MODPATH/bin/check.sh" || abort '设备不匹配，未启用桥接。'
+ui_print '检查运行条件…'
+/data/adb/ksu/bin/busybox sh "$MODPATH/bin/check.sh" || abort '运行条件不满足，未启用桥接。'
 [ -f "$MODPATH/bin/dell-pen-bridge" ] || abort '包内程序缺失。'
 ACTUAL=$(sha256sum "$MODPATH/bin/dell-pen-bridge") || abort '无法计算包内程序校验值。'
 EXPECTED=$(tr -d '\r\n' < "$MODPATH/bin/dell-pen-bridge.sha256") || abort '无法读取校验文件。'

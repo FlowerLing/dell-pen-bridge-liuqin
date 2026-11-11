@@ -4,9 +4,10 @@
 原版 [焦点笔 Plus](https://github.com/BaerYiTo/XiaomiSmartPenPlus)
 自定义动作。安装后由平板独立运行，日常使用无需电脑或 USB。
 
-**仅适配下表这一套系统、内核和触控驱动，不是通用触控笔兼容模块。**
-安装器和每次启动都会检查这些条件；不匹配时拒绝运行。请勿修改校验值
-强行安装，其他版本需要重新分析与验证。
+只在原项目列出的环境实测，其他版本能否使用未知。
+v0.1.3 已移除型号、系统版本、内核版本和驱动哈希检查，保留 Root、ARM64、KernelSU、运行接口、驱动已加载及焦点笔 Plus 要求。
+探测符号、偏移和数据布局仍按原驱动编写；取消检查不代表自动适配，其他环境可能无效、误触发、卡死或重启。
+本版未进行新的实机测试。
 
 | 项目 | 已验证版本 |
 | --- | --- |
@@ -28,7 +29,7 @@
 
 1. 先安装并配置 KernelSU、Zygisk Next、LSPosed 和原版“焦点笔 Plus”。
 2. 在 LSPosed 启用“焦点笔 Plus”，作用域勾选“系统框架”。
-3. 从本仓库 **Releases** 下载 `Dell-PN7522W-liuqin-KernelSU-v0.1.2.zip`。
+3. 从本仓库 **Releases** 下载 `Dell-PN7522W-liuqin-KernelSU-v0.1.3.zip`。
    GitHub 自动生成的 **Source code (zip)** 是源码，不能作为模块安装。
 4. 在 KernelSU 管理器的模块页面选择模块 ZIP，安装完成后**重启平板**。
 5. 在“焦点笔 Plus”里配置动作：
@@ -45,6 +46,8 @@
 同名输入设备冲突。
 
 ## 实测状态
+
+v0.1.3 未进行新的实机测试，下面为旧版历史验证记录。
 
 0.1.1 已完成正式 KernelSU 安装、重启自动启动、两个实体侧键测试；
 独立运行测试中，断开 USB 后两个键也正常。发布版 0.1.2 只更新打包、
@@ -72,7 +75,7 @@ Android 按键上报。模块在内核正式处理笔数据的路径设置私有
 运行时使用内核动态跟踪接口，并非完全不触及内核运行状态。
 
 状态与简短日志保存在内存目录 `/dev/dell_pen_bridge_liuqin`，不会持续
-写入原始笔迹或坐标。只有在校验通过后才启动私有跟踪实例；退出时仅
+写入原始笔迹或坐标。只有在运行条件检查通过后才启动私有跟踪实例；退出时仅
 清理本模块的实例、探针和虚拟设备。
 
 ## 排查
@@ -80,7 +83,7 @@ Android 按键上报。模块在内核正式处理笔数据的路径设置私有
 - 刚安装或更新后没有效果：先重启，确认 KernelSU 中模块已启用。
 - 侧键没有动作：确认笔尖在感应范围内、模块没有暂停、Plus 已启用
   且系统框架作用域正确，并检查对应手势是否配置了动作。
-- 系统或内核更新后拒绝启动：这是版本保护，需要重新适配。
+- 更换系统或内核后异常：其他版本兼容性未知，请禁用模块并重新分析驱动。
 
 以 Root 执行以下命令可查看状态：
 
@@ -141,9 +144,8 @@ strictly verified Xiaomi Pad 6 Pro (`liuqin`) ROM/kernel/Novatek-driver build.
 It reads the driver's existing button state through a private runtime kprobe
 and sends uinput key events to the unmodified XiaomiSmartPenPlus app. The pen
 must remain within the screen's sensing range. It runs on the tablet without
-a computer, enforces exact-build guards, and does not replace boot images or
+a computer, checks runtime prerequisites, and does not replace boot images or
 vendor driver files. Version 0.1.2 is a documentation/licensing packaging
 revision of the device-tested 0.1.1 runtime. Download the installable ZIP from
 Releases, install it in KernelSU, reboot, and configure actions in
-XiaomiSmartPenPlus. Other devices, kernels and drivers are unsupported until
-separately analyzed and tested.
+XiaomiSmartPenPlus. Version 0.1.3 removes device, ROM, kernel and driver-hash guards. Other builds are untested and may fail, misbehave or crash due to fixed probe offsets.
