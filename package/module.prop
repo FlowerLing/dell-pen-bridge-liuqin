@@ -1,0 +1,6 @@
+id=dell_pen_bridge_liuqin
+name=Dell PN7522W Side Buttons for Pad 6 Pro
+version=0.1.2
+versionCode=3
+author=Dell Pen Bridge contributors
+description=戴尔 PN7522W 侧键桥接至焦点笔 Plus。仅适配已验证的小米平板 6 Pro liuqin 驱动；动作按钮可暂停/恢复。

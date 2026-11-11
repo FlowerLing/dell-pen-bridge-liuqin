@@ -1,0 +1,9 @@
+/dist/
+/build-cache/
+/.zig-cache/
+/zig-cache/
+__pycache__/
+*.pyc
+*.log
+.DS_Store
+Thumbs.db
