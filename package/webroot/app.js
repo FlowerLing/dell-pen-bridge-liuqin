@@ -2,6 +2,20 @@
 const root = '/data/adb/modules/dell_pen_bridge_liuqin';
 const preview = new URLSearchParams(location.search).has('preview');
 const options = [['none','不执行'],['back','返回'],['home','回到桌面'],['recents','最近任务'],['volume_up','音量增加'],['volume_down','音量减少'],['play_pause','播放 / 暂停'],['next','下一曲'],['previous','上一曲'],['screenshot','截图（取决于系统支持）'],['power','电源键短按（亮屏 / 息屏）'],['power_long','电源键长按（跟随系统设置）'],['custom','自定义命令']];
+const examples = [
+ ['返回上一页', '# 返回上一页\ninput keyevent 4'],
+ ['回到桌面', '# 回到系统桌面\ninput keyevent 3'],
+ ['最近任务', '# 打开最近任务列表\ninput keyevent 187'],
+ ['音量增加', '# 增加一级音量\ninput keyevent 24'],
+ ['音量减少', '# 减少一级音量\ninput keyevent 25'],
+ ['播放 / 暂停', '# 控制当前媒体播放或暂停\ninput keyevent 85'],
+ ['下一曲', '# 切换到下一首歌曲\ninput keyevent 87'],
+ ['上一曲', '# 切换到上一首歌曲\ninput keyevent 88'],
+ ['截图', '# 模拟截图键，部分系统可能不支持\ninput keyevent 120'],
+ ['电源键短按', '# 模拟电源键短按：亮屏或息屏\ninput keyevent 26'],
+ ['电源键长按', '# 模拟电源键长按，效果跟随系统设置\n# 可能打开电源菜单或语音助手\ninput keyevent --longpress 26'],
+ ['打开系统设置', '# 打开系统设置首页\nam start -a android.settings.SETTINGS']
+];
 const gestures = [['single','单击','轻按一次'],['double','双击','快速连按两次'],['long','长按','按住约一秒后松开']];
 let sequence = 0, loaded = false;
 const $ = id => document.getElementById(id);
@@ -26,9 +40,22 @@ for(const [key,title,caption] of gestures){
   for(const [value,text] of options){const option=document.createElement('option');option.value=value;option.textContent=text;select.append(option);}
   const command=document.createElement('div');command.className='command';command.hidden=true;
   const cl=document.createElement('label');cl.htmlFor=key+'-command';cl.textContent='Shell 命令';
-  const textarea=document.createElement('textarea');textarea.id=key+'-command';textarea.maxLength=4096;textarea.spellcheck=false;textarea.placeholder='例如：input keyevent 3';
+  const textarea=document.createElement('textarea');textarea.id=key+'-command';textarea.maxLength=4096;textarea.spellcheck=false;textarea.placeholder='在下方选择常用示例，或填写自己的命令。\n以 # 开头的行是中文注释，不会执行。';
   const help=document.createElement('p');help.textContent='支持多行；最多 4096 个 UTF-8 字节。';
-  command.append(cl,textarea,help);select.addEventListener('change',()=>{command.hidden=select.value!=='custom';});
+  const exampleList=document.createElement('details');exampleList.className='examples';
+  const summary=document.createElement('summary');summary.textContent='常用命令示例（含中文注释）';exampleList.append(summary);
+  const intro=document.createElement('p');intro.textContent='点击“填入”会替换当前输入框内容，不会立即执行。';exampleList.append(intro);
+  for(const [name,code] of examples){
+    const row=document.createElement('div');row.className='example';
+    const head=document.createElement('div');head.className='example-head';
+    const title=document.createElement('strong');title.textContent=name;
+    const fill=document.createElement('button');fill.type='button';fill.textContent='填入';fill.setAttribute('aria-label','填入'+name+'示例');
+    fill.addEventListener('click',()=>{textarea.value=code;textarea.focus();$('message').textContent='已填入“'+name+'”，点击保存后生效';});
+    head.append(title,fill);
+    const pre=document.createElement('pre');pre.textContent=code;
+    row.append(head,pre);exampleList.append(row);
+  }
+  command.append(cl,textarea,help,exampleList);select.addEventListener('change',()=>{command.hidden=select.value!=='custom';});
   section.append(label,sub,select,command);$('gestures').append(section);
 }
 async function refresh(){
