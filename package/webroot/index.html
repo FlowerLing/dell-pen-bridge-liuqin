@@ -1,10 +1,14 @@
 <!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'none'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
-<title>戴尔笔 · 顶部按键</title><link rel="stylesheet" href="style.css"></head>
+<title>戴尔笔 · 按键设置</title><link rel="stylesheet" href="style.css"></head>
 <body><main>
-<header><span class="eyebrow">DELL PN7522W</span><h1>顶部按键，随你设置</h1><p>单击、双击与长按，各有一个动作。</p></header>
+<header><span class="eyebrow">DELL PN7522W</span><h1>笔上按键，随你设置</h1><p>单击、双击与长按，各有一个动作。</p></header>
 <section class="statusbar" aria-label="运行状态"><span id="connection">正在读取状态…</span><button id="refresh" type="button">刷新</button></section>
+<section class="side-settings" id="side-settings"><h2>侧键映射</h2><p>选择上下侧键输出的原生按键码。更改一侧会自动对调另一侧。</p>
+<fieldset><legend>上侧键（远离笔尖）</legend><label><input type="radio" name="side-upper" value="104" checked> PAGE_UP</label><label><input type="radio" name="side-upper" value="109"> PAGE_DOWN</label></fieldset>
+<fieldset><legend>下侧键（靠近笔尖）</legend><label><input type="radio" name="side-lower" value="104"> PAGE_UP</label><label><input type="radio" name="side-lower" value="109" checked> PAGE_DOWN</label></fieldset>
+<button id="side-save" type="button" disabled>保存侧键映射</button><p id="side-message" role="status">正在读取映射…</p></section>
 <form id="settings">
 <section class="switchrow"><div><h2>启用顶部按键</h2><p>需要笔通过蓝牙连接平板</p></div><input id="enabled" type="checkbox" role="switch" aria-label="启用顶部按键"></section>
 <div id="gestures"></div>
@@ -12,7 +16,7 @@
 <aside class="warning"><strong>自定义命令以 Root 权限执行</strong><p>仅填写你理解的命令。保存不会执行命令；实际按键才会触发。每次执行最长约八秒，执行期间的新动作会忽略。请勿用来启动常驻后台程序。</p></aside>
 <footer><button id="save" type="submit">保存设置</button><span id="message" role="status" aria-live="polite">三个动作默认均不执行</span></footer>
 </form>
-<details><summary>侧键在哪里设置？</summary><p>两个侧键仍在“焦点笔 Plus”中设置。本页只负责顶部蓝牙键。模块暂停或禁用时，顶部动作也会停止。</p></details>
+<details><summary>侧键在哪里设置？</summary><p>本页可设置侧键输出 PAGE_UP / PAGE_DOWN 的对应关系。侧键具体动作仍可在“焦点笔 Plus”中设置。模块暂停或禁用时，顶部动作也会停止。</p></details>
 <p class="version">Dell Pen Bridge · 0.2.0<br><span class="credit">Designed by FlowerLing</span></p>
 </main>
 <dialog id="action-dialog" aria-labelledby="action-dialog-title"><div class="dialog-heading"><h2 id="action-dialog-title">选择动作</h2><button id="close-dialog" type="button" aria-label="关闭动作选择">关闭</button></div><div id="action-options" class="action-options"></div></dialog>

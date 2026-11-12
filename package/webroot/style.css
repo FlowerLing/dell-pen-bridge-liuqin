@@ -10,3 +10,5 @@
 .dialog-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 20px;border-bottom:1px solid var(--line);flex:none}.dialog-heading button{padding:6px 12px;background:var(--hint);color:var(--blue)}
 .action-options{overflow-y:auto;overscroll-behavior:contain;padding:8px;min-height:0;-webkit-overflow-scrolling:touch}
 .action-option{display:block;width:100%;text-align:left;padding:13px 14px;border-radius:10px;color:var(--text);background:transparent;min-height:48px}.action-option[aria-pressed=true]{background:var(--hint);color:var(--blue);font-weight:650}.action-option:hover{background:var(--hint)}
+
+#side-settings fieldset{border:0;padding:8px 0;margin:8px 0}#side-settings fieldset label{display:inline-flex;align-items:center;gap:8px;margin:8px 20px 8px 0}#side-settings input{width:20px;height:20px}#side-save{margin-top:12px}

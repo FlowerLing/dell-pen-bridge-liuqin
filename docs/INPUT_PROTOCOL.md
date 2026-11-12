@@ -29,17 +29,17 @@
 
 | 实体侧键 | 状态位 | 虚拟 Linux 键码（十进制） | Android 键码（十进制） | 焦点笔 Plus |
 | --- | --- | --- | --- | --- |
-| 上侧键，离笔尖较远 | `0x02` | `KEY_PAGEDOWN` = 109 | `KEYCODE_PAGE_DOWN` = 93 | 笔键 1 |
-| 下侧键，靠近笔尖 | `0x01` | `KEY_PAGEUP` = 104 | `KEYCODE_PAGE_UP` = 92 | 笔键 2 |
+| 上侧键，离笔尖较远 | `0x02` | `KEY_PAGEUP` = 104 | `KEYCODE_PAGE_UP` = 92 | 笔键 2 |
+| 下侧键，靠近笔尖 | `0x01` | `KEY_PAGEDOWN` = 109 | `KEYCODE_PAGE_DOWN` = 93 | 笔键 1 |
 
 `0x00` 表示没有侧键按下。实现保留两位状态，但两个键同时按下的 `0x03` 组合未单独完成实机验证。
 虚拟输入设备名称为 **`Xiaomi Smart Pen Keyboard`**；这些 PAGE 键是本项目生成的，不是戴尔笔原生发送的键码。
 
 | 操作 | 上侧键的模块输出 | 下侧键的模块输出 |
 | --- | --- | --- |
-| 单击 | `PAGEDOWN DOWN → UP` 一组 | `PAGEUP DOWN → UP` 一组 |
-| 双击 | 两组连续 `PAGEDOWN DOWN → UP` | 两组连续 `PAGEUP DOWN → UP` |
-| 长按 | `PAGEDOWN DOWN`，保持后 `UP` | `PAGEUP DOWN`，保持后 `UP` |
+| 单击 | `PAGEUP DOWN → UP` 一组 | `PAGEDOWN DOWN → UP` 一组 |
+| 双击 | 两组连续 `PAGEUP DOWN → UP` | 两组连续 `PAGEDOWN DOWN → UP` |
+| 长按 | `PAGEUP DOWN`，保持后 `UP` | `PAGEDOWN DOWN`，保持后 `UP` |
 
 这轮实测：上侧键单击约 0.18 秒、长按约 1.20 秒；下侧键单击约 0.28 秒、长按约 1.50 秒。
 这些只是当次人工操作时长，**不是手势判定阈值**。单击、双击、长按的最终识别由焦点笔 Plus 完成。

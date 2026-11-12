@@ -21,6 +21,21 @@ read_config() {
   valid_action "$long" || long=none
 }
 case "${1:-get}" in
+  side-get)
+    upper=104; lower=109
+    if [ -f "$DATA/side.conf" ]; then read -r upper lower < "$DATA/side.conf"; fi
+    case "$upper:$lower" in 104:109|109:104) ;; *) upper=104; lower=109;; esac
+    printf '%s %s\n' "$upper" "$lower"
+    ;;
+  side-save)
+    [ "$#" -eq 3 ] || exit 2
+    case "$2:$3" in 104:109|109:104) ;; *) exit 2;; esac
+    exec 9> "$DATA/config.lock"; "$BB" flock -x 9 || exit 1
+    TEMP=$("$BB" mktemp "$DATA/side.conf.XXXXXX") || exit 1
+    printf '%s %s\n' "$2" "$3" > "$TEMP" || exit 1
+    mv -f "$TEMP" "$DATA/side.conf" || exit 1
+    echo '已保存，松开侧键后下次按下生效'
+    ;;
   get)
     read_config
     printf '%s\n' "$enabled" "$single" "$double" "$long" "$sc" "$dc" "$lc"

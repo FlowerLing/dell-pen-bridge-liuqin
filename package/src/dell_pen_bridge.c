@@ -25,8 +25,8 @@
  * Replay uses recorded timestamps, reports deduplicated state transitions,
  * simulates the 500 ms release timeout between frames, and releases at EOF.
  *
- * Mask 2 (upper side button) -> KEY_PAGEDOWN 109 -> module button 1.
- * Mask 1 (lower side button) -> KEY_PAGEUP   104 -> module button 2.
+ * Mask 2 (upper side button) -> KEY_PAGEUP   104 -> module button 2.
+ * Mask 1 (lower side button) -> KEY_PAGEDOWN 109 -> module button 1.
  * No coordinate, pressure, tilt, or touch events are injected or intercepted.
  */
 
@@ -107,6 +107,8 @@ struct bridge {
     int lock_fd;
     bool uinput_created;
     unsigned mask;
+    unsigned upper_code;
+    unsigned lower_code;
     double started;
     double last_fresh;
     double last_stamp;
@@ -267,16 +269,34 @@ static int emit_events(int fd, struct input_event *events, size_t count) {
     return 0;
 }
 
+#ifndef SIDE_CONFIG_PATH
+#define SIDE_CONFIG_PATH "/data/adb/dell_pen_bridge_liuqin/side.conf"
+#endif
+
 static int set_mask(struct bridge *bridge, unsigned mask, const char *reason) {
     if (bridge->mask == mask) return 0;
+    if (bridge->mask == 0) {
+        bridge->upper_code = KEY_PAGEUP;
+        bridge->lower_code = KEY_PAGEDOWN;
+        FILE *config = fopen(SIDE_CONFIG_PATH, "r");
+        if (config) {
+            unsigned upper, lower; char extra;
+            if (fscanf(config, "%u %u %c", &upper, &lower, &extra) == 2 &&
+                ((upper == KEY_PAGEUP && lower == KEY_PAGEDOWN) ||
+                 (upper == KEY_PAGEDOWN && lower == KEY_PAGEUP))) {
+                bridge->upper_code = upper; bridge->lower_code = lower;
+            }
+            fclose(config);
+        }
+    }
     struct input_event events[3];
     size_t count = 0;
     unsigned released = bridge->mask & ~mask;
     unsigned pressed = mask & ~bridge->mask;
-    if (released & 2) input_event_set(&events[count++], KEY_PAGEDOWN, 0);
-    if (released & 1) input_event_set(&events[count++], KEY_PAGEUP, 0);
-    if (pressed & 2) input_event_set(&events[count++], KEY_PAGEDOWN, 1);
-    if (pressed & 1) input_event_set(&events[count++], KEY_PAGEUP, 1);
+    if (released & 2) input_event_set(&events[count++], bridge->upper_code, 0);
+    if (released & 1) input_event_set(&events[count++], bridge->lower_code, 0);
+    if (pressed & 2) input_event_set(&events[count++], bridge->upper_code, 1);
+    if (pressed & 1) input_event_set(&events[count++], bridge->lower_code, 1);
     memset(&events[count], 0, sizeof(events[count]));
     events[count++].type = EV_SYN;
     if (emit_events(bridge->uinput_fd, events, count) < 0) return -1;

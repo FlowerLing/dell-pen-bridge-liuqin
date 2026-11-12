@@ -58,8 +58,8 @@ v0.1.3 已移除型号、系统版本、内核版本和驱动哈希检查，保�
    GitHub 自动生成的 **Source code (zip)** 是源码，不能作为模块安装。
 4. 在 KernelSU 管理器的模块页面选择模块 ZIP，安装完成后**重启平板**。
 5. 在“焦点笔 Plus”里配置动作：
-   - 上侧键（离笔尖较远）对应“笔键 1”。
-   - 下侧键（靠近笔尖）对应“笔键 2”。
+   - 上侧键（离笔尖较远）对应“笔键 2”。
+   - 下侧键（靠近笔尖）对应“笔键 1”。
 6. 让笔尖保持在屏幕感应范围内，分别测试两个侧键。
 
 单击、长按、双击和按应用动作沿用“焦点笔 Plus”的设置。某个手势
@@ -91,8 +91,8 @@ Android 按键上报。模块在内核正式处理笔数据的路径设置私有
 
 | 实体侧键 | 状态位 | Linux 按键 | Android 按键 | Plus 配置 |
 | --- | --- | --- | --- | --- |
-| 上侧键 | `0x02` | `KEY_PAGEDOWN` (109) | `PAGE_DOWN` (93) | 笔键 1 |
-| 下侧键 | `0x01` | `KEY_PAGEUP` (104) | `PAGE_UP` (92) | 笔键 2 |
+| 上侧键 | `0x02` | `KEY_PAGEUP` (104) | `PAGE_UP` (92) | 笔键 2 |
+| 下侧键 | `0x01` | `KEY_PAGEDOWN` (109) | `PAGE_DOWN` (93) | 笔键 1 |
 
 真实按压时长会保留。离开感应范围、超过 500 毫秒没有有效数据、遇到
 过期/异常记录或服务停止时释放按键。模块不替换笔迹坐标、压力、倾角
@@ -174,3 +174,5 @@ vendor driver files. Version 0.1.2 is a documentation/licensing packaging
 revision of the device-tested 0.1.1 runtime. Download the installable ZIP from
 Releases, install it in KernelSU, reboot, and configure actions in
 XiaomiSmartPenPlus. Version 0.1.3 removes device, ROM, kernel and driver-hash guards. Other builds are untested and may fail, misbehave or crash due to fixed probe offsets.
+
+侧键输出可在模块 WebUI 的“侧键映射”中对调 PAGE_UP / PAGE_DOWN；默认上侧键 PAGE_UP、下侧键 PAGE_DOWN。保存后松开侧键，下次按下生效。

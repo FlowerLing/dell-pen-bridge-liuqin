@@ -132,3 +132,23 @@ $('settings').addEventListener('submit',async event=>{
   }catch(e){$('message').textContent=e.message;}finally{$('save').disabled=false;}
 });
 load();
+
+function setSide(upper){
+ document.querySelector('input[name="side-upper"][value="'+upper+'"]').checked=true;
+ document.querySelector('input[name="side-lower"][value="'+(upper==='104'?'109':'104')+'"]').checked=true;
+}
+for(const radio of document.querySelectorAll('#side-settings input'))radio.addEventListener('change',()=>setSide(radio.name==='side-upper'?radio.value:(radio.value==='104'?'109':'104')));
+async function loadSide(){
+ try{const row=preview?'104 109':(await api('side-get')).trim();
+ if(!['104 109','109 104'].includes(row))throw new Error('侧键映射读取失败');
+ setSide(row.split(' ')[0]);$('side-save').disabled=false;$('side-message').textContent='松开侧键后，下次按下使用新映射';
+ }catch(e){$('side-message').textContent=e.message;}
+}
+$('side-save').addEventListener('click',async()=>{
+ $('side-save').disabled=true;
+ try{const upper=document.querySelector('input[name="side-upper"]:checked').value;
+ if(!preview)await api('side-save',upper,upper==='104'?'109':'104');
+ $('side-message').textContent=preview?'预览：未写入设备':'已保存，松开侧键后下次按下生效';
+ }catch(e){$('side-message').textContent=e.message;}finally{$('side-save').disabled=false;}
+});
+loadSide();

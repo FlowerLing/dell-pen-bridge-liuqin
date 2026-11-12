@@ -11,6 +11,7 @@ const assert = require('node:assert/strict');
    window.ksu={exec(command,options,callback){
      window.saved.push(command);
      let out='';
+     if(command.includes("'side-get'"))out='104 109';
      if(command.includes("'get'"))out='0\nnone\nnone\nnone\n\n\n\n';
      if(command.includes("'status'"))out=JSON.stringify({running:true,enabled:true,connected:true});
      setTimeout(()=>window[callback](0,out,''),0);
@@ -19,6 +20,13 @@ const assert = require('node:assert/strict');
  await page.goto('file:///'+path.resolve('package/webroot/index.html').replaceAll('\\','/'));
  await page.waitForFunction(()=>!document.getElementById('save').disabled);
  assert.equal(await page.locator('.gesture').count(),3);
+ await page.waitForFunction(()=>!document.getElementById('side-save').disabled);
+ await page.locator('input[name="side-upper"][value="109"]').check();
+ assert(await page.locator('input[name="side-lower"][value="104"]').isChecked());
+ await page.locator('#side-save').click();
+ await page.waitForFunction(()=>document.getElementById('side-message').textContent.includes('已保存'));
+ assert((await page.evaluate(()=>window.saved)).some(x=>x.includes("'side-save' '109' '104'")));
+
  await page.locator('#single').click();
  await page.locator('#action-options').getByRole('button',{name:'自定义命令',exact:true}).click();
  await page.locator('.gesture').first().locator('summary').click();
