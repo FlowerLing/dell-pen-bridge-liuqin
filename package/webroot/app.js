@@ -37,7 +37,7 @@ const examples = [
  ],
  [
   "开启无线调试",
-  "# 请求开启无线调试，需要连接 Wi-Fi\n# 首次使用可能需要确认网络和配对；当前移植系统尚未实测\nsettings put global adb_wifi_enabled 1"
+  "# 请求开启无线调试，需要连接 Wi-Fi\n# 首次使用可能需要确认网络和配对；开启已在当前平板验证\nsettings put global adb_wifi_enabled 1"
  ],
  [
   "关闭无线调试",
