@@ -17,7 +17,7 @@ SOURCE = BASE / "src/dell_pen_bridge.c"
 BINARY = PACKAGE / "bin/dell-pen-bridge"
 CHECKSUM = PACKAGE / "bin/dell-pen-bridge.sha256"
 DIST = BASE / "dist"
-TEXT_SUFFIXES = {".sh", ".prop", ".md", ".c", ".sha256", ".txt"}
+TEXT_SUFFIXES = {".sh", ".prop", ".md", ".c", ".sha256", ".txt", ".html", ".css", ".js"}
 TEXT_NAMES = {"LICENSE"}
 EXPECTED_FILES = {
     "action.sh", "bin/check.sh", "bin/control.sh", "bin/dell-pen-bridge",
@@ -26,6 +26,8 @@ EXPECTED_FILES = {
     "VALIDATION.md", "LICENSE", "THIRD_PARTY_NOTICES.md",
     "LICENSES/Zig-MIT.txt", "LICENSES/musl-COPYRIGHT.txt",
     "LICENSES/musl-SOURCE-NOTICES.txt",
+    "bin/dell-top-button", "bin/dell-top-button.sha256", "bin/top-config.sh", "bin/top-control.sh",
+    "src/dell_top_button.c", "webroot/index.html", "webroot/style.css", "webroot/app.js",
 }
 
 
@@ -88,6 +90,7 @@ def sync_distribution_text() -> None:
     for path in sorted((BASE / "LICENSES").glob("*.txt")):
         write_text(PACKAGE / "LICENSES" / path.name, path.read_text(encoding="utf-8-sig"))
     shutil.copyfile(SOURCE, PACKAGE / "src/dell_pen_bridge.c")
+    shutil.copyfile(BASE / "src/dell_top_button.c", PACKAGE / "src/dell_top_button.c")
 
 
 def make_archive(output: Path, native_digest: str) -> list[dict[str, object]]:
@@ -103,7 +106,7 @@ def make_archive(output: Path, native_digest: str) -> list[dict[str, object]]:
                 data.decode("utf-8")
                 if b"\r" in data or data.startswith(b"\xef\xbb\xbf"):
                     raise ValueError(f"Text must use UTF-8 without BOM and LF: {relative}")
-            executable = path.suffix == ".sh" or relative == "bin/dell-pen-bridge"
+            executable = path.suffix == ".sh" or relative in ("bin/dell-pen-bridge", "bin/dell-top-button")
             mode = 0o100755 if executable else 0o100644
             entry = zipfile.ZipInfo(relative, (2026, 11, 11, 0, 0, 0))
             entry.create_system = 3
@@ -142,6 +145,19 @@ def main() -> None:
         raise ValueError("Source differs from the packaged source. Recompile before packaging a changed program.")
     compiler_version = None if args.package_only else compile_binary(args.zig)
     native_digest = verify_recorded_binary()
+    top_binary = PACKAGE / "bin/dell-top-button"
+    top_source = BASE / "src/dell_top_button.c"
+    top_checksum = PACKAGE / "bin/dell-top-button.sha256"
+    if args.package_only:
+        if top_source.read_bytes() != (PACKAGE / "src/dell_top_button.c").read_bytes():
+            raise ValueError("Top-button source changed: rebuild first")
+    else:
+        compiler = args.zig or os.environ.get("ZIG") or shutil.which("zig")
+        subprocess.run([compiler, "cc", "-target", "aarch64-linux-musl", "-static", "-O2", "-std=c11", "-Wall", "-Wextra", "-Werror", "-fstack-protector-strong", "-Wl,-z,relro,-z,now", str(top_source), "-o", str(top_binary)], check=True)
+        write_text(top_checksum, sha256(top_binary.read_bytes()) + "\n")
+    check_binary(top_binary.read_bytes())
+    if top_checksum.read_bytes() != (sha256(top_binary.read_bytes()) + "\n").encode("ascii"):
+        raise ValueError("Top-button binary checksum mismatch")
     sync_distribution_text()
     DIST.mkdir(exist_ok=True)
     output = DIST / f"Dell-PN7522W-liuqin-KernelSU-v{version}.zip"

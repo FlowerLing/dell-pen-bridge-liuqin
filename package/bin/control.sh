@@ -133,6 +133,7 @@ run_service() {
 }
 
 start_service() {
+  "$BB" sh "$MODDIR/bin/top-control.sh" start
   setup_runtime || return 1
   for flag in disable remove paused; do
     if [ -e "$MODDIR/$flag" ]; then echo '模块当前已停用或暂停'; return 1; fi
@@ -144,6 +145,7 @@ start_service() {
 }
 
 stop_service() {
+  "$BB" sh "$MODDIR/bin/top-control.sh" stop
   setup_runtime || return 1
   touch "$RUNDIR/stop"
   if service_alive; then kill -TERM "$PID" 2>/dev/null; fi

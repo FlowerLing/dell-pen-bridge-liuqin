@@ -8,3 +8,4 @@
 *.sha256 text eol=lf
 package/bin/dell-pen-bridge binary
 *.zip binary
+package/bin/dell-top-button binary
