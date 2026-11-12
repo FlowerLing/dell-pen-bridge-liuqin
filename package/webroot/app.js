@@ -3,18 +3,46 @@ const root = '/data/adb/modules/dell_pen_bridge_liuqin';
 const preview = new URLSearchParams(location.search).has('preview');
 const options = [['none','不执行'],['back','返回'],['home','回到桌面'],['recents','最近任务'],['volume_up','音量增加'],['volume_down','音量减少'],['play_pause','播放 / 暂停'],['next','下一曲'],['previous','上一曲'],['screenshot','截图（取决于系统支持）'],['power','电源键短按（亮屏 / 息屏）'],['power_long','电源键长按（跟随系统设置）'],['custom','自定义命令']];
 const examples = [
- ['返回上一页', '# 返回上一页\ninput keyevent 4'],
- ['回到桌面', '# 回到系统桌面\ninput keyevent 3'],
- ['最近任务', '# 打开最近任务列表\ninput keyevent 187'],
- ['音量增加', '# 增加一级音量\ninput keyevent 24'],
- ['音量减少', '# 减少一级音量\ninput keyevent 25'],
- ['播放 / 暂停', '# 控制当前媒体播放或暂停\ninput keyevent 85'],
- ['下一曲', '# 切换到下一首歌曲\ninput keyevent 87'],
- ['上一曲', '# 切换到上一首歌曲\ninput keyevent 88'],
- ['截图', '# 模拟截图键，部分系统可能不支持\ninput keyevent 120'],
- ['电源键短按', '# 模拟电源键短按：亮屏或息屏\ninput keyevent 26'],
- ['电源键长按', '# 模拟电源键长按，效果跟随系统设置\n# 可能打开电源菜单或语音助手\ninput keyevent --longpress 26'],
- ['打开系统设置', '# 打开系统设置首页\nam start -a android.settings.SETTINGS']
+ [
+  "展开通知栏",
+  "# 展开通知栏\ncmd statusbar expand-notifications"
+ ],
+ [
+  "展开快捷设置",
+  "# 展开快捷设置面板\ncmd statusbar expand-settings"
+ ],
+ [
+  "收起通知栏",
+  "# 收起通知栏和快捷设置\ncmd statusbar collapse"
+ ],
+ [
+  "打开系统设置",
+  "# 打开系统设置首页\nam start -a android.settings.SETTINGS"
+ ],
+ [
+  "打开 Wi-Fi 设置",
+  "# 打开 Wi-Fi 设置页面\nam start -a android.settings.WIFI_SETTINGS"
+ ],
+ [
+  "打开蓝牙设置",
+  "# 打开蓝牙设置页面\nam start -a android.settings.BLUETOOTH_SETTINGS"
+ ],
+ [
+  "打开显示设置",
+  "# 打开显示设置页面\nam start -a android.settings.DISPLAY_SETTINGS"
+ ],
+ [
+  "打开开发者选项",
+  "# 打开开发者选项，可在其中找到无线调试\nam start -a android.settings.APPLICATION_DEVELOPMENT_SETTINGS"
+ ],
+ [
+  "开启无线调试",
+  "# 请求开启无线调试，需要连接 Wi-Fi\n# 首次使用可能需要确认网络和配对；当前移植系统尚未实测\nsettings put global adb_wifi_enabled 1"
+ ],
+ [
+  "关闭无线调试",
+  "# 关闭无线调试，不关闭 USB 调试\nsettings put global adb_wifi_enabled 0"
+ ]
 ];
 const gestures = [['single','单击','轻按一次'],['double','双击','快速连按两次'],['long','长按','按住约一秒后松开']];
 let sequence = 0, loaded = false;
