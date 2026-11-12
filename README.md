@@ -1,5 +1,7 @@
 # Dell Pen Bridge for Xiaomi Pad 6 Pro
 
+开发者资料：[侧键与顶部蓝牙键输入协议、实测事件和接入说明](docs/INPUT_PROTOCOL.md)。
+
 ## 顶部蓝牙键 WebUI（0.2.0）
 
 已完成正式安装、重启自启及 WebUI 保存与三种实体操作测试，见 [验证记录](VALIDATION.md)。
