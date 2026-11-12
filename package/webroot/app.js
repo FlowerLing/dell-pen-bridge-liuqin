@@ -1,7 +1,7 @@
 'use strict';
 const root = '/data/adb/modules/dell_pen_bridge_liuqin';
 const preview = new URLSearchParams(location.search).has('preview');
-const options = [['none','不执行'],['back','返回'],['home','回到桌面'],['recents','最近任务'],['volume_up','音量增加'],['volume_down','音量减少'],['play_pause','播放 / 暂停'],['next','下一曲'],['previous','上一曲'],['screenshot','截图（取决于系统支持）'],['custom','自定义命令']];
+const options = [['none','不执行'],['back','返回'],['home','回到桌面'],['recents','最近任务'],['volume_up','音量增加'],['volume_down','音量减少'],['play_pause','播放 / 暂停'],['next','下一曲'],['previous','上一曲'],['screenshot','截图（取决于系统支持）'],['power','电源键短按（亮屏 / 息屏）'],['power_long','电源键长按（跟随系统设置）'],['custom','自定义命令']];
 const gestures = [['single','单击','轻按一次'],['double','双击','快速连按两次'],['long','长按','按住约一秒后松开']];
 let sequence = 0, loaded = false;
 const $ = id => document.getElementById(id);

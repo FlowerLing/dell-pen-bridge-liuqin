@@ -9,7 +9,7 @@ umask 077
 [ ! -L "$DATA" ] && [ ! -L "$RUNDIR" ] || exit 1
 mkdir -p "$DATA" "$RUNDIR" || exit 1
 chmod 700 "$DATA" "$RUNDIR"
-valid_action() { case "$1" in none|back|home|recents|volume_up|volume_down|play_pause|next|previous|screenshot|custom) return 0;; *) return 1;; esac; }
+valid_action() { case "$1" in none|back|home|recents|volume_up|volume_down|play_pause|next|previous|screenshot|power|power_long|custom) return 0;; *) return 1;; esac; }
 read_config() {
   enabled=0; single=none; double=none; long=none; sc=; dc=; lc=
   if [ -f "$CONFIG" ]; then
@@ -52,13 +52,16 @@ case "${1:-get}" in
     exec 8> "$DATA/action.lock"; "$BB" flock -n 8 || exit 0
     case "$action" in
       none) exit 0;;
+      power_long)
+        "$BB" timeout -s KILL 8 /system/bin/input keyevent --longpress 26 >/dev/null 2>&1
+        ;;
       custom)
         command=$(printf '%s' "$code" | "$BB" base64 -d) || exit 2
         [ -n "$command" ] || exit 0
         "$BB" timeout -s KILL 8 /system/bin/sh -c "$command" >/dev/null 2>&1
         ;;
       *)
-        case "$action" in back) key=4;; home) key=3;; recents) key=187;; volume_up) key=24;; volume_down) key=25;; play_pause) key=85;; next) key=87;; previous) key=88;; screenshot) key=120;; *) exit 2;; esac
+        case "$action" in back) key=4;; home) key=3;; recents) key=187;; volume_up) key=24;; volume_down) key=25;; play_pause) key=85;; next) key=87;; previous) key=88;; screenshot) key=120;; power) key=26;; *) exit 2;; esac
         "$BB" timeout -s KILL 8 /system/bin/input keyevent "$key" >/dev/null 2>&1
         ;;
     esac
