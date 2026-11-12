@@ -12,3 +12,5 @@
 .action-option{display:block;width:100%;text-align:left;padding:13px 14px;border-radius:10px;color:var(--text);background:transparent;min-height:48px}.action-option[aria-pressed=true]{background:var(--hint);color:var(--blue);font-weight:650}.action-option:hover{background:var(--hint)}
 
 #side-settings fieldset{border:0;padding:8px 0;margin:8px 0}#side-settings fieldset label{display:inline-flex;align-items:center;gap:8px;margin:8px 20px 8px 0}#side-settings input{width:20px;height:20px}#side-save{margin-top:12px}
+
+a{color:inherit;text-underline-offset:3px}a:focus-visible{outline:2px solid currentColor;outline-offset:4px}.credit{text-decoration:none}.credit:hover{text-decoration:underline}
