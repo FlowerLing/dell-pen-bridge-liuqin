@@ -10,6 +10,19 @@
 
 每个侧键可以区分单击、双击、长按，但它们不是三种独立的硬件键码。顶部键的三种操作则有三个不同键码。
 
+## 从笔到焦点笔 Plus：三层信号不是同一个东西
+
+1. **笔与触控驱动之间**：本项目确认的是触控驱动收到的侧键状态字段（b77 的 0x02/0x01），没有把它当成经过完整解析的原始无线通信协议。原驱动能收到状态，却没有为侧键生成标准按键事件。
+2. **桥接程序到 Android**：桥接通过 uinput 创建 `Xiaomi Smart Pen Keyboard`，生成 Linux `KEY_PAGEDOWN=109` / `KEY_PAGEUP=104` 的按下和松开。Android 将其映射为 `KEYCODE_PAGE_DOWN=93` / `KEYCODE_PAGE_UP=92`。
+3. **焦点笔 Plus 收到的输入**：Plus 在系统框架里收到 Android KeyEvent。已审阅版本的 `isPenButton` 接受设备名 `Xiaomi Smart Pen Keyboard` 与 Android 93/92 的组合，再区分单击、双击、长按执行配置动作。
+
+**对应小米官方笔的是第3层的按键接口**：本项目刻意生成 Plus 原本支持的设备名和按键。它并不意味着戴尔笔的底层无线协议、笔迹数据或全部官方笔功能已经变成小米官方笔。
+没有同一台平板上的官方笔原始采集对照，不能据此宣称两支笔在全部底层字段上完全一致。
+
+顶部键另走蓝牙键盘通道：Dell PN7522W Keyboard → Meta+F20/F19/F18 → 本模块动作执行器，当前没有转换为 Plus 的笔键1/2。
+
+接口依据为已审阅的 [XiaomiSmartPenPlus PenKeyController.java](https://github.com/BaerYiTo/XiaomiSmartPenPlus/blob/1639ac230456de9151e1faa9205f2ad3cd0846dc/app/src/main/java/xiaomismartpen/plus/PenKeyController.java)，不是对未来版本或全部官方笔型号的保证。
+
 ## 两个侧键：原始状态与桥接输出
 
 当前驱动的笔数据 `b77` 低两位作为按键状态：

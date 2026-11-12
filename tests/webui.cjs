@@ -19,7 +19,8 @@ const assert = require('node:assert/strict');
  await page.goto('file:///'+path.resolve('package/webroot/index.html').replaceAll('\\','/'));
  await page.waitForFunction(()=>!document.getElementById('save').disabled);
  assert.equal(await page.locator('.gesture').count(),3);
- await page.locator('#single').selectOption('custom');
+ await page.locator('#single').click();
+ await page.locator('#action-options').getByRole('button',{name:'自定义命令',exact:true}).click();
  await page.locator('.gesture').first().locator('summary').click();
  await page.locator('.gesture').first().getByRole('button',{name:'填入电源键长按示例',exact:true}).click();
  assert.equal(await page.locator('#single-command').inputValue(),'# 模拟电源键长按，效果跟随系统设置\n# 可能打开电源菜单或语音助手\ninput keyevent --longpress 26');
@@ -40,5 +41,16 @@ const assert = require('node:assert/strict');
  await page.screenshot({path:'tests/output/webui-mobile.png',fullPage:true});
  await page.setViewportSize({width:1000,height:900});
  await page.screenshot({path:'tests/output/webui-tablet.png',fullPage:true});
+ assert.equal(await page.locator('.credit').textContent(),'Designed by FlowerLing');
+ for(const size of [{width:430,height:932},{width:1200,height:750},{width:750,height:430}]){
+   await page.setViewportSize(size);
+   await page.locator('#long').scrollIntoViewIfNeeded();await page.locator('#long').click();
+   const box=await page.locator('#action-dialog').boundingBox();
+   assert(box.x>=0&&box.y>=0&&box.x+box.width<=size.width+1&&box.y+box.height<=size.height+1);
+   await page.locator('#action-options').getByRole('button',{name:'电源键长按（跟随系统设置）',exact:true}).scrollIntoViewIfNeeded();
+   await page.screenshot({path:'tests/output/action-picker-'+size.width+'x'+size.height+'.png'});
+   await page.locator('#close-dialog').click();
+   assert.equal(await page.locator('#long').evaluate(e=>e.value),'none');
+ }
  await browser.close(); console.log('WebUI: load, save, UTF-8 command encoding, shell quoting, mobile layout passed');
 })().catch(e=>{console.error(e);process.exit(1)});

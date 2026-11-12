@@ -21,6 +21,24 @@ let sequence = 0, loaded = false;
 const $ = id => document.getElementById(id);
 const quote = value => "'" + String(value).replaceAll("'", "'\\''") + "'";
 const encode = value => btoa(String.fromCharCode(...new TextEncoder().encode(value)));
+let activePicker = null;
+const dialog = document.getElementById('action-dialog');
+function updatePicker(picker){picker.textContent=(options.find(x=>x[0]===picker.value)||options[0])[1];}
+function openPicker(picker,title){
+  activePicker=picker;
+  $('action-dialog-title').textContent=title+' · 选择动作';
+  const list=$('action-options');list.replaceChildren();
+  for(const [value,text] of options){
+    const item=document.createElement('button');item.type='button';item.className='action-option';item.textContent=text;
+    item.setAttribute('aria-pressed',String(value===picker.value));
+    item.addEventListener('click',()=>{picker.value=value;updatePicker(picker);picker.dispatchEvent(new Event('change'));dialog.close();});
+    list.append(item);
+  }
+  document.body.style.overflow='hidden';dialog.showModal();list.scrollTop=0;
+  const current=list.querySelector('[aria-pressed="true"]');if(current)current.focus({preventScroll:true});
+}
+$('close-dialog').addEventListener('click',()=>dialog.close());
+dialog.addEventListener('close',()=>{document.body.style.overflow='';if(activePicker)activePicker.focus({preventScroll:true});});
 const decode = value => new TextDecoder('utf-8',{fatal:true}).decode(Uint8Array.from(atob(value),x=>x.charCodeAt(0)));
 function shell(command) {
   return new Promise((resolve,reject)=>{
@@ -36,14 +54,13 @@ for(const [key,title,caption] of gestures){
   const section=document.createElement('section');section.className='gesture';
   const label=document.createElement('label');label.htmlFor=key;label.textContent=title;
   const sub=document.createElement('p');sub.className='caption';sub.textContent=caption;
-  const select=document.createElement('select');select.id=key;
-  for(const [value,text] of options){const option=document.createElement('option');option.value=value;option.textContent=text;select.append(option);}
+  const select=document.createElement('button');select.type='button';select.id=key;select.className='action-picker';select.value='none';select.setAttribute('aria-haspopup','dialog');updatePicker(select);select.addEventListener('click',()=>openPicker(select,title));
   const command=document.createElement('div');command.className='command';command.hidden=true;
   const cl=document.createElement('label');cl.htmlFor=key+'-command';cl.textContent='Shell 命令';
   const textarea=document.createElement('textarea');textarea.id=key+'-command';textarea.maxLength=4096;textarea.spellcheck=false;textarea.placeholder='在下方选择常用示例，或填写自己的命令。\n以 # 开头的行是中文注释，不会执行。';
   const help=document.createElement('p');help.textContent='支持多行；最多 4096 个 UTF-8 字节。';
   const exampleList=document.createElement('details');exampleList.className='examples';
-  const summary=document.createElement('summary');summary.textContent='常用命令示例（含中文注释）';exampleList.append(summary);
+  const summary=document.createElement('summary');summary.textContent='常用命令示例';exampleList.append(summary);
   const intro=document.createElement('p');intro.textContent='点击“填入”会替换当前输入框内容，不会立即执行。';exampleList.append(intro);
   for(const [name,code] of examples){
     const row=document.createElement('div');row.className='example';
@@ -68,7 +85,7 @@ async function load(){
   try{
     const rows=preview?['0','none','none','none','','','']:(await api('get')).replaceAll('\r','').split('\n');
     $('enabled').checked=rows[0]==='1';
-    gestures.forEach(([key],i)=>{$(key).value=options.some(x=>x[0]===rows[i+1])?rows[i+1]:'none';$(key+'-command').value=decode(rows[i+4]||'');$(key).dispatchEvent(new Event('change'));});
+    gestures.forEach(([key],i)=>{$(key).value=options.some(x=>x[0]===rows[i+1])?rows[i+1]:'none';updatePicker($(key));$(key+'-command').value=decode(rows[i+4]||'');$(key).dispatchEvent(new Event('change'));});
     loaded=true;await refresh();$('message').textContent=preview?'预览模式，保存不会写入设备':'设置已读取';
   }catch(e){$('message').textContent=e.message;}finally{$('save').disabled=!loaded;}
 }
